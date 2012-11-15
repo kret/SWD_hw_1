@@ -1,0 +1,268 @@
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 1
+Tobacco
+C o m p i l a t i o n
+
+
+   2   
+   3  Sets
+   4      tb    Tobaccos      / A, B, C, D /
+   5      tk    Technologies  / T1, T2, T3 / ;
+   6   
+   7  Table UnitProdCosts(tb, tk) Unit production costs in zl per t
+   8        T1     T2     T3
+   9  A   7600   7500   7300
+  10  B   8200   8000   7800
+  11  C   9600   9500   9200
+  12  D  10500  10400  10700 ;
+  13   
+  14  Table TechEfficiency(tb, tk) Technologies efficiency in t per h
+  15     T1  T2  T3
+  16  A  53  52  49
+  17  B  51  49  44
+  18  C  52  45  47
+  19  D  42  44  40 ;
+  20   
+  21  Parameters
+  22      a(tb)  monthly demand for tobacco type in t
+  23      /   A  30000
+  24          B  20000
+  25          C  12000
+  26          D   8000  /
+  27      b(tb)  price for tobacco type in zl per t
+  28      /   A   77000
+  29          B   81000
+  30          C   99000
+  31          D  105000  /
+  32      c(tk)  monthly available machine time in h
+  33      /   T1  672
+  34          T2  600
+  35          T3  480  / ;
+  36   
+  37  Variables
+  38    x(tb, tk)  production volume of tobacco type tb in technology tk
+  39    p          total net profit ;
+  40   
+  41  Positive variable x ;
+  42   
+  43  Equations
+  44    profit          monthly net profit
+  45    production(tk)  monthly production limits for technology tk
+  46    demand(tb)      monthly demand for tobacco tb ;
+  47   
+  48  profit ..  p =E= sum(tb, sum(tk, x(tb, tk) * (b(tb) - UnitProdCosts(tb, tk)))) * 0.11 * 0.85 ;
+  49  production(tk) ..  sum(tb, x(tb, tk) / TechEfficiency(tb, tk)) =L= c(tk) ;
+  50  demand(tb) ..  sum(tk, x(tb, tk)) =L= a(tb) ;
+  51   
+  52  Model Tobacco /all/ ;
+  53  Solve Tobacco maximizing p using LP ;
+  54  Display x.L, x.M, p.L, p.M ;
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 2
+Tobacco
+C o m p i l a t i o n
+
+
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 3
+Tobacco
+Equation Listing    SOLVE Tobacco Using LP From line 53
+
+
+---- profit  =E=  monthly net profit
+
+profit..  - 6488.9*x(A,T1) - 6498.25*x(A,T2) - 6516.95*x(A,T3) - 6806.8*x(B,T1) - 6825.5*x(B,T2) - 6844.2*x(B,T3) - 8358.9*x(C,T1) - 8368.25*x(C,T2) - 8396.3*x(C,T3) - 8835.75*x(D,T1) - 8845.1*x(D,T2) - 8817.05*x(D,T3) + p =E= 0 ; (LHS = 0)
+     
+
+---- production  =L=  monthly production limits for technology tk
+
+production(T1)..  0.0188679245283019*x(A,T1) + 0.0196078431372549*x(B,T1) + 0.0192307692307692*x(C,T1) + 0.0238095238095238*x(D,T1) =L= 672 ; (LHS = 0)
+     
+production(T2)..  0.0192307692307692*x(A,T2) + 0.0204081632653061*x(B,T2) + 0.0222222222222222*x(C,T2) + 0.0227272727272727*x(D,T2) =L= 600 ; (LHS = 0)
+     
+production(T3)..  0.0204081632653061*x(A,T3) + 0.0227272727272727*x(B,T3) + 0.0212765957446809*x(C,T3) + 0.025*x(D,T3) =L= 480 ; (LHS = 0)
+     
+
+---- demand  =L=  monthly demand for tobacco tb
+
+demand(A)..  x(A,T1) + x(A,T2) + x(A,T3) =L= 30000 ; (LHS = 0)
+     
+demand(B)..  x(B,T1) + x(B,T2) + x(B,T3) =L= 20000 ; (LHS = 0)
+     
+demand(C)..  x(C,T1) + x(C,T2) + x(C,T3) =L= 12000 ; (LHS = 0)
+     
+REMAINING ENTRY SKIPPED
+
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 4
+Tobacco
+Column Listing      SOLVE Tobacco Using LP From line 53
+
+
+---- x  production volume of tobacco type tb in technology tk
+
+x(A,T1)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -6488.9     profit
+        0.0189  production(T1)
+        1       demand(A)
+
+x(A,T2)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -6498.25    profit
+        0.0192  production(T2)
+        1       demand(A)
+
+x(A,T3)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -6516.95    profit
+        0.0204  production(T3)
+        1       demand(A)
+
+REMAINING 9 ENTRIES SKIPPED
+
+---- p  total net profit
+
+p
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       profit
+
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 5
+Tobacco
+Model Statistics    SOLVE Tobacco Using LP From line 53
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS            8
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES           13
+NON ZERO ELEMENTS            37
+
+
+GENERATION TIME      =        0.004 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
+
+
+EXECUTION TIME       =        0.004 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 6
+Tobacco
+Solution Report     SOLVE Tobacco Using LP From line 53
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   Tobacco             OBJECTIVE  p
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  53
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      1 Optimal                   
+**** OBJECTIVE VALUE        503020683.6162
+
+ RESOURCE USAGE, LIMIT          0.407      1000.000
+ ITERATION COUNT, LIMIT        13    2000000000
+
+IBM ILOG CPLEX   Jul  4, 2012 23.9.4 DEX 35892.35906 DEG Mac x86_64/Darwin
+Cplex 12.4.0.1
+
+LP status(1): optimal
+Optimal solution found.
+Objective :   503020683.616153
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU profit              .              .              .             1.0000      
+
+  profit  monthly net profit
+
+---- EQU production  monthly production limits for technology tk
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+T1        -INF          360.5729       672.0000          .          
+T2        -INF          600.0000       600.0000       486.2000      
+T3        -INF          480.0000       480.0000      1374.4500      
+
+---- EQU demand  monthly demand for tobacco tb
+
+         LOWER          LEVEL          UPPER         MARGINAL
+
+A        -INF        30000.0000     30000.0000      6488.9000      
+B        -INF        20000.0000     20000.0000      6815.5776      
+C        -INF        12000.0000     12000.0000      8367.0564      
+D        -INF         8000.0000      8000.0000      8835.7500      
+
+---- VAR x  production volume of tobacco type tb in technology tk
+
+            LOWER          LEVEL          UPPER         MARGINAL
+
+A.T1          .          9015.1281        +INF             .          
+A.T2          .          9975.5102        +INF             .          
+A.T3          .         11009.3617        +INF             .          
+B.T1          .              .            +INF           -8.7776      
+B.T2          .         20000.0000        +INF             .          
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 7
+Tobacco
+Solution Report     SOLVE Tobacco Using LP From line 53
+
+
+     VAR x  production volume of tobacco type tb in technology tk
+
+            LOWER          LEVEL          UPPER         MARGINAL
+
+B.T3          .              .            +INF           -2.6151      
+C.T1          .              .            +INF           -8.1564      
+C.T2          .              .            +INF           -9.6108      
+C.T3          .         12000.0000        +INF             .          
+D.T1          .          8000.0000        +INF             .          
+D.T2          .              .            +INF           -1.7000      
+D.T3          .              .            +INF          -53.0613      
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR p                 -INF      5.0302068E+8        +INF             .          
+
+  p  total net profit
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 17:20:48 Page 8
+Tobacco
+E x e c u t i o n
+
+
+----     54 VARIABLE x.L  production volume of tobacco type tb in technology tk
+
+           T1          T2          T3
+
+A    9015.128    9975.510   11009.362
+B               20000.000
+C                           12000.000
+D    8000.000
+
+
+----     54 VARIABLE x.M  production volume of tobacco type tb in technology tk
+
+           T1          T2          T3
+
+B      -8.778                  -2.615
+C      -8.156      -9.611
+D                  -1.700     -53.061
+
+
+----     54 VARIABLE p.L                   =  5.030207E+8  total net profit
+            VARIABLE p.M                   =        0.000  total net profit
+
+
+EXECUTION TIME       =        0.001 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      /Users/andreskee/Development/PJWSTK/SWD/SWD_hw_1/Tobacco_solution.gms
+Output     /Users/andreskee/Development/PJWSTK/SWD/SWD_hw_1/Tobacco_solution.lst
