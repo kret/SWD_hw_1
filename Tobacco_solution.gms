@@ -49,6 +49,8 @@ profit ..  p =E= sum(tb, sum(tk, x(tb, tk) * (Pri(tb) - UnitProdCosts(tb, tk))))
 production(tk) ..  sum(tb, x(tb, tk) / TechEfficiency(tb, tk)) =L= Ava(tk) ;
 demand(tb) ..  sum(tk, x(tb, tk)) =L= Dem(tb) ;
 
-Model Tobacco /all/ ;
+Model Tobacco / all / ;
+Option LP=CPLEX ;
+Tobacco.OptFile=1 ;
 Solve Tobacco maximizing p using LP ;
-Display x.L, x.M, p.L, p.M ;
+Display x.L, x.M, p.L ;
