@@ -19,17 +19,17 @@ C  52  45  47
 D  42  44  40 ;
 
 Parameters
-    a(tb)  monthly demand for tobacco type in t
+    Dem(tb)  monthly demand for tobacco type in t
     /   A  30000
         B  20000
         C  12000
         D   8000  /
-    b(tb)  price for tobacco type in zl per t
+    Pri(tb)  price for tobacco type in zl per t
     /   A   77000
         B   81000
         C   99000
         D  105000  /
-    c(tk)  monthly available machine time in h
+    Ava(tk)  monthly available machine time in h
     /   T1  672
         T2  600
         T3  480  / ;
@@ -45,9 +45,9 @@ Equations
   production(tk)  monthly production limits for technology tk
   demand(tb)      monthly demand for tobacco tb ;
 
-profit ..  p =E= sum(tb, sum(tk, x(tb, tk) * (b(tb) - UnitProdCosts(tb, tk)))) * 0.11 * 0.85 ;
-production(tk) ..  sum(tb, x(tb, tk) / TechEfficiency(tb, tk)) =L= c(tk) ;
-demand(tb) ..  sum(tk, x(tb, tk)) =L= a(tb) ;
+profit ..  p =E= sum(tb, sum(tk, x(tb, tk) * (Pri(tb) - UnitProdCosts(tb, tk)))) * 0.11 * 0.85 ;
+production(tk) ..  sum(tb, x(tb, tk) / TechEfficiency(tb, tk)) =L= Ava(tk) ;
+demand(tb) ..  sum(tk, x(tb, tk)) =L= Dem(tb) ;
 
 Model Tobacco /all/ ;
 Solve Tobacco maximizing p using LP ;
