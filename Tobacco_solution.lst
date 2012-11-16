@@ -1,79 +1,116 @@
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 1
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 1
 Tobacco
 C o m p i l a t i o n
 
 
-   2   
-   3  Sets
-   4      tb    Tobaccos      / A, B, C, D /
-   5      tk    Technologies  / T1, T2, T3 / ;
-   6   
-   7  Table UnitProdCosts(tb, tk) Unit production costs in zl per t
-   8        T1     T2     T3
-   9  A   7600   7500   7300
-  10  B   8200   8000   7800
-  11  C   9600   9500   9200
-  12  D  10500  10400  10700 ;
-  13   
-  14  Table TechEfficiency(tb, tk) Technologies efficiency in t per h
-  15     T1  T2  T3
-  16  A  53  52  49
-  17  B  51  49  44
-  18  C  52  45  47
-  19  D  42  44  40 ;
-  20   
-  21  Parameters
-  22      Dem(tb)  monthly demand for tobacco type in t
-  23      /   A  30000
-  24          B  20000
-  25          C  12000
-  26          D   8000  /
-  27      Pri(tb)  price for tobacco type in zl per t
-  28      /   A   77000
-  29          B   81000
-  30          C   99000
-  31          D  105000  /
-  32      Ava(tk)  monthly available machine time in h
-  33      /   T1  672
-  34          T2  600
-  35          T3  480  / ;
-  36   
-  37  Variables
-  38    x(tb, tk)  production volume of tobacco type tb in technology tk
-  39    p          total net profit ;
-  40   
-  41  Positive variable x ;
-  42   
-  43  Equations
-  44    profit          monthly net profit
-  45    production(tk)  monthly production limits for technology tk
-  46    demand(tb)      monthly demand for tobacco tb ;
-  47   
-  48  profit ..  p =E= sum(tb, sum(tk, x(tb, tk) * (Pri(tb) - UnitProdCosts(tb, tk)))) * 0.11 * 0.85 ;
-  49  production(tk) ..  sum(tb, x(tb, tk) / TechEfficiency(tb, tk)) =L= Ava(tk) ;
-  50  demand(tb) ..  sum(tk, x(tb, tk)) =L= Dem(tb) ;
-  51   
-  52  Model Tobacco / all / ;
-  53  Option LP=CPLEX ;
-  54  Tobacco.OptFile=1 ;
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 2
+   2  * Author: Andrzej Undziłło (s4694)
+   3   
+   4  Sets
+   5      tb    Tobaccos      / A, B, C, D /
+   6      tk    Technologies  / T1, T2, T3 / ;
+   7   
+   8  Table UnitProdCosts(tb, tk)  Unit production costs in zl per t
+   9        T1     T2     T3
+  10  A   7600   7500   7300
+  11  B   8200   8000   7800
+  12  C   9600   9500   9200
+  13  D  10500  10400  10700 ;
+  14   
+  15  Table TechEfficiency(tb, tk)  Technologies efficiency in t per h
+  16     T1  T2  T3
+  17  A  53  52  49
+  18  B  51  49  44
+  19  C  52  45  47
+  20  D  42  44  40 ;
+  21   
+  22  Parameters
+  23      DemandFor(tb)  monthly demand for tobacco type in t
+  24      /   A  30000
+  25          B  20000
+  26          C  12000
+  27          D   8000  /
+  28      PriceFor(tb)  price for tobacco type in zl per t
+  29      /   A   77000
+  30          B   81000
+  31          C   99000
+  32          D  105000  /
+  33      MachineAvailability(tk)  monthly available machine time in h
+  34      /   T1  672
+  35          T2  600
+  36          T3  480  / ;
+  37   
+  38  Variables
+  39    x(tb, tk)  production volume of tobacco type tb in technology tk
+  40    p          total profit before tax ;
+  41   
+  42  Positive variable x ;
+  43   
+  44  Equations
+  45    profit          monthly profit before tax - objective
+  46    production(tk)  monthly production limits for technology tk
+  47    demand(tb)      monthly demand for tobacco tb ;
+  48   
+  49  profit         ..  p =E= sum(tb, sum(tk, x(tb, tk) * (PriceFor(tb) - UnitProdCosts(tb, tk)))) ;
+  50  production(tk) ..        sum(tb, x(tb, tk) / TechEfficiency(tb, tk)) =L= MachineAvailability(tk) ;
+  51  demand(tb)     ..        sum(tk, x(tb, tk)) =L= DemandFor(tb) ;
+  52   
+  53  Model Tobacco / all / ;
+  54   
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 2
 Tobacco
 C o m p i l a t i o n
 
 
-  55  Solve Tobacco maximizing p using LP ;
-  56  Display x.L, x.M, p.L ;
+  55  * * * * * * * * * * * * * * * * * * * * *
+  56  * Configure sensitivity analysis options
+  57  *
+  64  * * * * * * * * * * * * * * * * * * * * *
+  65   
+  66  Option LP=CPLEX ;
+  67  Tobacco.OptFile=1 ;
+  68  Solve Tobacco maximizing p using LP ;
+  69   
+  70   
+  71  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  72  * Magic spells to get programatic access to sensitivity analysis data
+  73  *
+  74  Set uplo / lo, up / ;
+  75  Parameter
+  76    productionRNG(tk, uplo)
+  77    demandRNG(tb, uplo)
+  78    xRNG(tb, tk, uplo) ;
+  79   
+  80  Execute 'gams rng.gms lo=1 gdx=rng.gdx' ;
+  81  Abort$errorlevel 'Problems creating rng.gdx' ;
+  82  Execute_load 'rng.gdx' productionRNG, demandRNG, xRNG ;
+  83  *
+  84  * Magic spells END
+  85  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  86   
+  87  Parameter ProfitAfterTax  monthly net profit;
+  88  ProfitAfterTax = p.L * 0.11 * 0.85 ;
+  89   
+  90   
+  91   
+  92  Parameter CostPercentage(tb, tk)  difference between given costs and maximal non-result-changing costs, in percents ;
+  93  CostPercentage(tb, tk) = (PriceFor(tb) - xRNG(tb, tk, 'lo')) / UnitProdCosts(tb, tk) * 100 - 100 ;
+  94   
+  95  * Display results
+  96  Display x.L, ProfitAfterTax, CostPercentage ;
+
+**** LIST OF STRAY NAMES - CHECK DECLARATIONS FOR SPURIOUS COMMAS
+**** STRAY NAME in OF TYPE PARAM
 
 
-COMPILATION TIME     =        0.001 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 3
+COMPILATION TIME     =        0.000 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 3
 Tobacco
-Equation Listing    SOLVE Tobacco Using LP From line 55
+Equation Listing    SOLVE Tobacco Using LP From line 68
 
 
----- profit  =E=  monthly net profit
+---- profit  =E=  monthly profit before tax - objective
 
-profit..  - 6488.9*x(A,T1) - 6498.25*x(A,T2) - 6516.95*x(A,T3) - 6806.8*x(B,T1) - 6825.5*x(B,T2) - 6844.2*x(B,T3) - 8358.9*x(C,T1) - 8368.25*x(C,T2) - 8396.3*x(C,T3) - 8835.75*x(D,T1) - 8845.1*x(D,T2) - 8817.05*x(D,T3) + p =E= 0 ; (LHS = 0)
+profit..  - 69400*x(A,T1) - 69500*x(A,T2) - 69700*x(A,T3) - 72800*x(B,T1) - 73000*x(B,T2) - 73200*x(B,T3) - 89400*x(C,T1) - 89500*x(C,T2) - 89800*x(C,T3) - 94500*x(D,T1) - 94600*x(D,T2) - 94300*x(D,T3) + p =E= 0 ; (LHS = 0)
      
 
 ---- production  =L=  monthly production limits for technology tk
@@ -95,42 +132,42 @@ demand(C)..  x(C,T1) + x(C,T2) + x(C,T3) =L= 12000 ; (LHS = 0)
      
 REMAINING ENTRY SKIPPED
 
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 4
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 4
 Tobacco
-Column Listing      SOLVE Tobacco Using LP From line 55
+Column Listing      SOLVE Tobacco Using LP From line 68
 
 
 ---- x  production volume of tobacco type tb in technology tk
 
 x(A,T1)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
-    -6488.9     profit
+   -69400       profit
         0.0189  production(T1)
         1       demand(A)
 
 x(A,T2)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
-    -6498.25    profit
+   -69500       profit
         0.0192  production(T2)
         1       demand(A)
 
 x(A,T3)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
-    -6516.95    profit
+   -69700       profit
         0.0204  production(T3)
         1       demand(A)
 
 REMAINING 9 ENTRIES SKIPPED
 
----- p  total net profit
+---- p  total profit before tax
 
 p
                 (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
         1       profit
 
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 5
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 5
 Tobacco
-Model Statistics    SOLVE Tobacco Using LP From line 55
+Model Statistics    SOLVE Tobacco Using LP From line 68
 
 
 MODEL STATISTICS
@@ -140,98 +177,68 @@ BLOCKS OF VARIABLES           2     SINGLE VARIABLES           13
 NON ZERO ELEMENTS            37
 
 
-GENERATION TIME      =        0.004 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
+GENERATION TIME      =        0.050 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
 
 
-EXECUTION TIME       =        0.004 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 6
+EXECUTION TIME       =        0.051 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 6
 Tobacco
-Solution Report     SOLVE Tobacco Using LP From line 55
+Solution Report     SOLVE Tobacco Using LP From line 68
 
 
                S O L V E      S U M M A R Y
 
      MODEL   Tobacco             OBJECTIVE  p
      TYPE    LP                  DIRECTION  MAXIMIZE
-     SOLVER  CPLEX               FROM LINE  55
+     SOLVER  CPLEX               FROM LINE  68
 
 **** SOLVER STATUS     1 Normal Completion         
 **** MODEL STATUS      1 Optimal                   
-**** OBJECTIVE VALUE        503020683.6162
+**** OBJECTIVE VALUE       5379900359.5310
 
- RESOURCE USAGE, LIMIT          0.007      1000.000
+ RESOURCE USAGE, LIMIT          0.018      1000.000
  ITERATION COUNT, LIMIT        13    2000000000
 
 IBM ILOG CPLEX   Jul  4, 2012 23.9.4 DEX 35892.35906 DEG Mac x86_64/Darwin
 Cplex 12.4.0.1
 
 Reading parameter(s) from "/Users/andreskee/Development/PJWSTK/SWD/SWD_hw_1/cplex.opt"
->>  objrng all
->>  rhsrng all
+>>    objrng x
+>>    rhsrng production
+>>    rhsrng demand
+>>    rngrestart rng.gms
 Finished reading from "/Users/andreskee/Development/PJWSTK/SWD/SWD_hw_1/cplex.opt"
 LP status(1): optimal
 Optimal solution found.
-Objective :   503020683.616153
+Objective :  5379900359.531047
 
-  
- 
-EQUATION NAME                                                                                                                                                                                                          LOWER          CURRENT            UPPER
--------------                                                                                                                                                                                                          -----          -------            -----
-profit                                                                                                                                                                                                                  -INF                0             +INF
-production(T1)                                                                                                                                                                                                       360.573              672             +INF
-production(T2)                                                                                                                                                                                                       408.163              600          773.368
-production(T3)                                                                                                                                                                                                       255.319              480          663.982
-demand(A)                                                                                                                                                                                                            20984.9            30000          46505.6
-demand(B)                                                                                                                                                                                                              11505            20000            29400
-demand(C)                                                                                                                                                                                                            3352.84            12000            22560
-demand(D)                                                                                                                                                                                                                  0             8000          21079.9
-  
- 
-VARIABLE NAME                                                                                                                                                                                                          LOWER          CURRENT            UPPER
--------------                                                                                                                                                                                                          -----          -------            -----
-x(A, T1)                                                                                                                                                                                                             6481.08           6488.9          6490.34
-x(A, T2)                                                                                                                                                                                                             6496.81          6498.25          6500.71
-x(A, T3)                                                                                                                                                                                                              6514.6          6516.95          6524.77
-x(B, T1)                                                                                                                                                                                                                -INF           6806.8          6815.58
-x(B, T2)                                                                                                                                                                                                             6822.88           6825.5             +INF
-x(B, T3)                                                                                                                                                                                                                -INF           6844.2          6846.82
-x(C, T1)                                                                                                                                                                                                                -INF           8358.9          8367.06
-x(C, T2)                                                                                                                                                                                                                -INF          8368.25          8377.86
-x(C, T3)                                                                                                                                                                                                             8388.14           8396.3             +INF
-x(D, T1)                                                                                                                                                                                                             8834.05          8835.75             +INF
-x(D, T2)                                                                                                                                                                                                                -INF           8845.1           8846.8
-x(D, T3)                                                                                                                                                                                                                -INF          8817.05          8870.11
-p                                                                                                                                                                                                                       -INF                1             +INF
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 7
-Tobacco
-Solution Report     SOLVE Tobacco Using LP From line 55
-
-
- 
- 
 
                            LOWER          LEVEL          UPPER         MARGINAL
 
 ---- EQU profit              .              .              .             1.0000      
 
-  profit  monthly net profit
+  profit  monthly profit before tax - objective
 
 ---- EQU production  monthly production limits for technology tk
 
           LOWER          LEVEL          UPPER         MARGINAL
 
 T1        -INF          360.5729       672.0000          .          
-T2        -INF          600.0000       600.0000       486.2000      
-T3        -INF          480.0000       480.0000      1374.4500      
+T2        -INF          600.0000       600.0000      5200.0000      
+T3        -INF          480.0000       480.0000     14700.0000      
 
 ---- EQU demand  monthly demand for tobacco tb
 
          LOWER          LEVEL          UPPER         MARGINAL
 
-A        -INF        30000.0000     30000.0000      6488.9000      
-B        -INF        20000.0000     20000.0000      6815.5776      
-C        -INF        12000.0000     12000.0000      8367.0564      
-D        -INF         8000.0000      8000.0000      8835.7500      
+A        -INF        30000.0000     30000.0000     69400.0000      
+B        -INF        20000.0000     20000.0000     72893.8776      
+C        -INF        12000.0000     12000.0000     89487.2340      
+D        -INF         8000.0000      8000.0000     94500.0000      
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 7
+Tobacco
+Solution Report     SOLVE Tobacco Using LP From line 68
+
 
 ---- VAR x  production volume of tobacco type tb in technology tk
 
@@ -240,32 +247,32 @@ D        -INF         8000.0000      8000.0000      8835.7500
 A.T1          .          9015.1281        +INF             .          
 A.T2          .          9975.5102        +INF             .          
 A.T3          .         11009.3617        +INF             .          
-B.T1          .              .            +INF           -8.7776      
+B.T1          .              .            +INF          -93.8776      
 B.T2          .         20000.0000        +INF             .          
-B.T3          .              .            +INF           -2.6151      
-C.T1          .              .            +INF           -8.1564      
-C.T2          .              .            +INF           -9.6108      
+B.T3          .              .            +INF          -27.9685      
+C.T1          .              .            +INF          -87.2340      
+C.T2          .              .            +INF         -102.7896      
 C.T3          .         12000.0000        +INF             .          
 D.T1          .          8000.0000        +INF             .          
-D.T2          .              .            +INF           -1.7000      
-D.T3          .              .            +INF          -53.0613      
+D.T2          .              .            +INF          -18.1818      
+D.T3          .              .            +INF         -567.5000      
 
                            LOWER          LEVEL          UPPER         MARGINAL
 
----- VAR p                 -INF      5.0302068E+8        +INF             .          
+---- VAR p                 -INF      5.3799004E+9        +INF             .          
 
-  p  total net profit
+  p  total profit before tax
 
 
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/15/12 23:06:38 Page 8
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 8
 Tobacco
 E x e c u t i o n
 
 
-----     56 VARIABLE x.L  production volume of tobacco type tb in technology tk
+----     96 VARIABLE x.L  production volume of tobacco type tb in technology tk
 
            T1          T2          T3
 
@@ -275,19 +282,20 @@ C                           12000.000
 D    8000.000
 
 
-----     56 VARIABLE x.M  production volume of tobacco type tb in technology tk
+----     96 PARAMETER ProfitAfterTax       =  5.030207E+8  monthly net profit
+
+----     96 PARAMETER CostPercentage  difference between given costs and maximal non-result-changing costs
 
            T1          T2          T3
 
-B      -8.778                  -2.615
-C      -8.156      -9.611
-D                  -1.700     -53.061
+A       1.101       0.205       0.344
+B        +INF       0.350        +INF
+C        +INF        +INF       0.948
+D       0.173        +INF        +INF
 
 
-----     56 VARIABLE p.L                   =  5.030207E+8  total net profit
 
-
-EXECUTION TIME       =        0.001 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
+EXECUTION TIME       =        0.028 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
 
 
 USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
