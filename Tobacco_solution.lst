@@ -1,4 +1,4 @@
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 1
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 1
 Tobacco
 C o m p i l a t i o n
 
@@ -56,7 +56,7 @@ C o m p i l a t i o n
   52   
   53  Model Tobacco / all / ;
   54   
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 2
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 2
 Tobacco
 C o m p i l a t i o n
 
@@ -92,18 +92,15 @@ C o m p i l a t i o n
   89   
   90   
   91   
-  92  Parameter CostPercentage(tb, tk)  difference between given costs and maximal non-result-changing costs, in percents ;
+  92  Parameter CostPercentage(tb, tk)  difference between given costs and maximal non-result-changing costs - in percents ;
   93  CostPercentage(tb, tk) = (PriceFor(tb) - xRNG(tb, tk, 'lo')) / UnitProdCosts(tb, tk) * 100 - 100 ;
   94   
   95  * Display results
   96  Display x.L, ProfitAfterTax, CostPercentage ;
 
-**** LIST OF STRAY NAMES - CHECK DECLARATIONS FOR SPURIOUS COMMAS
-**** STRAY NAME in OF TYPE PARAM
 
-
-COMPILATION TIME     =        0.000 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 3
+COMPILATION TIME     =        0.011 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 3
 Tobacco
 Equation Listing    SOLVE Tobacco Using LP From line 68
 
@@ -132,7 +129,7 @@ demand(C)..  x(C,T1) + x(C,T2) + x(C,T3) =L= 12000 ; (LHS = 0)
      
 REMAINING ENTRY SKIPPED
 
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 4
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 4
 Tobacco
 Column Listing      SOLVE Tobacco Using LP From line 68
 
@@ -165,7 +162,7 @@ p
                 (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
         1       profit
 
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 5
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 5
 Tobacco
 Model Statistics    SOLVE Tobacco Using LP From line 68
 
@@ -177,11 +174,11 @@ BLOCKS OF VARIABLES           2     SINGLE VARIABLES           13
 NON ZERO ELEMENTS            37
 
 
-GENERATION TIME      =        0.050 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
+GENERATION TIME      =        0.247 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
 
 
-EXECUTION TIME       =        0.051 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 6
+EXECUTION TIME       =        0.274 SECONDS      4 Mb  DEX239-239 Oct 20, 2012
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 6
 Tobacco
 Solution Report     SOLVE Tobacco Using LP From line 68
 
@@ -196,7 +193,7 @@ Solution Report     SOLVE Tobacco Using LP From line 68
 **** MODEL STATUS      1 Optimal                   
 **** OBJECTIVE VALUE       5379900359.5310
 
- RESOURCE USAGE, LIMIT          0.018      1000.000
+ RESOURCE USAGE, LIMIT          0.896      1000.000
  ITERATION COUNT, LIMIT        13    2000000000
 
 IBM ILOG CPLEX   Jul  4, 2012 23.9.4 DEX 35892.35906 DEG Mac x86_64/Darwin
@@ -235,7 +232,7 @@ A        -INF        30000.0000     30000.0000     69400.0000
 B        -INF        20000.0000     20000.0000     72893.8776      
 C        -INF        12000.0000     12000.0000     89487.2340      
 D        -INF         8000.0000      8000.0000     94500.0000      
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 7
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 7
 Tobacco
 Solution Report     SOLVE Tobacco Using LP From line 68
 
@@ -267,7 +264,7 @@ D.T3          .              .            +INF         -567.5000
 **** REPORT SUMMARY :        0     NONOPT
                              0 INFEASIBLE
                              0  UNBOUNDED
-GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/16/12 22:54:47 Page 8
+GAMS Rev 239  XXX-DEG 23.9.4 Mac x86_64/Darwin                                                                                                                                                                                         11/18/12 14:18:50 Page 8
 Tobacco
 E x e c u t i o n
 
@@ -284,7 +281,7 @@ D    8000.000
 
 ----     96 PARAMETER ProfitAfterTax       =  5.030207E+8  monthly net profit
 
-----     96 PARAMETER CostPercentage  difference between given costs and maximal non-result-changing costs
+----     96 PARAMETER CostPercentage  difference between given costs and maximal non-result-changing costs - in percents
 
            T1          T2          T3
 
@@ -295,7 +292,7 @@ D       0.173        +INF        +INF
 
 
 
-EXECUTION TIME       =        0.028 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
+EXECUTION TIME       =        0.029 SECONDS      3 Mb  DEX239-239 Oct 20, 2012
 
 
 USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY

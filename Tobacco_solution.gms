@@ -89,7 +89,7 @@ ProfitAfterTax = p.L * 0.11 * 0.85 ;
 
 
 
-Parameter CostPercentage(tb, tk)  difference between given costs and maximal non-result-changing costs, in percents ;
+Parameter CostPercentage(tb, tk)  difference between given costs and maximal non-result-changing costs - in percents ;
 CostPercentage(tb, tk) = (PriceFor(tb) - xRNG(tb, tk, 'lo')) / UnitProdCosts(tb, tk) * 100 - 100 ;
 
 * Display results
